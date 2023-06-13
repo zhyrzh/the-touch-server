@@ -11,10 +11,9 @@ datasource db {
 }
 
 model User {
-  email     String       @id
-  password  String
-  profileId Int
-  profile   UserProfile?
+  email    String       @id
+  password String
+  profile  UserProfile?
 }
 
 model UserProfile {
