@@ -7,13 +7,18 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   async login(loginBody: LoginDto): Promise<any> {
     // const user = await this.usersService.findOne(username);
+
     if (!loginBody.email || !loginBody.password) {
       throw new BadRequestException('All fields are required');
     }
@@ -22,21 +27,37 @@ export class AuthService {
       where: {
         email: loginBody.email,
       },
+      include: {
+        profile: true,
+      },
     });
 
-    const isPasswordMatching = bcrypt.compare(
-      foundUser.password,
+    if (!foundUser) {
+      throw new UnauthorizedException('Invalid credentials', 'check error');
+    }
+
+    const isPasswordMatching = await bcrypt.compare(
       loginBody.password,
+      foundUser.password,
     );
 
     if (!isPasswordMatching) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid credentials', 'check error');
     }
 
-    // TODO: Generate a JWT and return it here
-    // instead of the user object
+    const payload = {
+      email: foundUser.email,
+      sub: foundUser.email,
+    };
+
+    const access_token = this.jwtService.sign(payload);
+
     return {
       message: 'Login successful',
+      payload: {
+        profile: foundUser.profile,
+        access_token,
+      },
     };
   }
 
@@ -65,5 +86,9 @@ export class AuthService {
     return {
       message: 'User successfully registered!',
     };
+  }
+
+  async verify() {
+    return 'verified?';
   }
 }
