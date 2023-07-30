@@ -83,8 +83,19 @@ export class AuthService {
         password: hashedPassword,
       },
     });
+
+    const payload = {
+      email: registerBody.email,
+      sub: registerBody.email,
+    };
+
+    const access_token = this.jwtService.sign(payload);
+
     return {
       message: 'User successfully registered!',
+      payload: {
+        access_token,
+      },
     };
   }
 
