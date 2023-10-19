@@ -12,7 +12,7 @@ cloudianry.v2.config({
 export class UploadLibraryService {
   constructor(private prismaService: PrismaService) {}
 
-  async uploadImage(file: string, filename: string) {
+  async uploadProfileImage(file: string, filename: string, email: string) {
     const { public_id: publicId, url } = await cloudianry.v2.uploader.upload(
       file,
       {
@@ -20,10 +20,11 @@ export class UploadLibraryService {
       },
     );
 
-    const uploadedAsset = await this.prismaService.articleAssets.create({
+    const uploadedAsset = await this.prismaService.userAssets.create({
       data: {
-        publicId,
-        url,
+        url: url,
+        publicId: publicId,
+        userProfileEmail: email,
       },
     });
 
@@ -31,5 +32,32 @@ export class UploadLibraryService {
       ...uploadedAsset,
       filename,
     };
+  }
+
+  async uploadImage(file: string, filename: string) {
+    try {
+      const {
+        public_id: publicId,
+        url,
+        ...rest
+      } = await cloudianry.v2.uploader.upload(file, {
+        upload_preset: 'the-touch-assets',
+      });
+
+      const uploadedAsset = await this.prismaService.articleAssets.create({
+        data: {
+          url: url,
+          publicId: publicId,
+        },
+      });
+
+      return {
+        ...uploadedAsset,
+        publicId,
+        filename,
+        signature: rest.signature,
+        // secure_url,
+      };
+    } catch (error) {}
   }
 }
