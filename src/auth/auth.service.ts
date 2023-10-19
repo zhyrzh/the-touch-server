@@ -94,6 +94,7 @@ export class AuthService {
     return {
       message: 'User successfully registered!',
       payload: {
+        profile: null,
         access_token,
       },
     };
