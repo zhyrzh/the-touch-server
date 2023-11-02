@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from '@nestjs/class-validator';
 import { Type } from 'class-transformer';
-import { IsArray } from 'class-validator';
+import { ArrayMinSize, IsArray, ValidateNested } from 'class-validator';
 import { UserDTO } from './user.dto';
 
 export class CreateArticleDto {
@@ -17,8 +17,14 @@ export class CreateArticleDto {
   content: string;
 
   @IsArray()
+  @ValidateNested({
+    always: true,
+    each: true,
+  })
+  @ArrayMinSize(1, {
+    message: 'Author should not be empty',
+  })
   @Type(() => UserDTO)
-  @IsNotEmpty()
   author: UserDTO[];
 
   @IsArray()
