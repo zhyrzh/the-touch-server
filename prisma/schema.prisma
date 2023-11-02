@@ -11,18 +11,19 @@ datasource db {
 }
 
 model User {
-  email    String       @id()
-  password String
-  profile  UserProfile?
+  email      String       @id()
+  password   String
+  isApproved Boolean      @default(false)
+  profile    UserProfile?
 }
 
 model UserProfile {
   email String @id() @unique()
 
-  firstName    String
-  lastName     String
-  course       String
-  position     String
+  firstName    String?
+  lastName     String?
+  course       String?
+  position     String?
   profileImage UserAssets?
 
   credentials User @relation(fields: [email], references: [email])
@@ -33,7 +34,8 @@ model UserProfile {
 }
 
 model Article {
-  id Int @id() @default(autoincrement())
+  id         Int     @id() @default(autoincrement())
+  isApproved Boolean @default(false)
 
   category        String
   headline        String
