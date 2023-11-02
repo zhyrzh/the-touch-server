@@ -1,14 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateArticleDto } from './dto/createArticle.dto';
-// import { UserDTO } from './dto/user.dto';
 
 @Injectable()
 export class ArticleService {
   constructor(private prismaService: PrismaService) {}
 
   async createArticle(body: CreateArticleDto) {
-    console.log(body, 'check body');
     try {
       await this.prismaService.article.create({
         data: {
@@ -48,5 +46,36 @@ export class ArticleService {
       return error;
     }
     return body;
+  }
+
+  async getLimitedRecent() {
+    try {
+      const data = await this.prismaService.article.findMany({
+        take: 4,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        where: {
+          isApproved: {
+            equals: false,
+          },
+        },
+        include: {
+          author: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+        },
+      });
+      return data;
+    } catch (error) {
+      throw new HttpException(
+        { reason: 'Something went wrong when querying' + error },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }
