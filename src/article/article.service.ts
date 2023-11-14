@@ -68,6 +68,12 @@ export class ArticleService {
               email: true,
             },
           },
+          images: {
+            select: {
+              publicId: true,
+              url: true,
+            },
+          },
         },
       });
       return data;
