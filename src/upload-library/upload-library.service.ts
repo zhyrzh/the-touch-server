@@ -24,12 +24,13 @@ export class UploadLibraryService {
       data: {
         url: url,
         publicId: publicId,
-        userProfileEmail: email,
       },
     });
 
     return {
       ...uploadedAsset,
+      publicId,
+      url,
       filename,
     };
   }
