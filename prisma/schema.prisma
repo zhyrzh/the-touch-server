@@ -18,7 +18,8 @@ model User {
 }
 
 model UserProfile {
-  email String @id() @unique()
+  email      String  @id() @unique()
+  isApproved Boolean @default(false)
 
   firstName    String?
   lastName     String?
@@ -64,6 +65,6 @@ model UserAssets {
   publicId String
   url      String
 
-  UserProfile      UserProfile @relation(fields: [userProfileEmail], references: [email])
-  userProfileEmail String      @unique
+  UserProfile UserProfile? @relation(fields: [userEmail], references: [email])
+  userEmail   String?      @unique
 }
