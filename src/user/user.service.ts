@@ -25,23 +25,16 @@ export class UserService {
 
   async createProfile(body: any, email: string) {
     try {
-      const createdProfile = await this.prismaService.user.update({
-        where: {
-          email,
-        },
+      const createdProfile = await this.prismaService.userProfile.create({
         data: {
-          profile: {
-            update: {
-              course: body.course,
-              firstName: body.firstName,
-              lastName: body.lastName,
-              position: body.position,
-              profileImage: {
-                update: {
-                  url: body.profileImage.url,
-                  publicId: body.profileImage.publicId,
-                },
-              },
+          email: email,
+          course: body.course,
+          firstName: body.firstName,
+          lastName: body.lastName,
+          position: body.position,
+          profileImage: {
+            connect: {
+              id: body.profileImage.id,
             },
           },
         },
@@ -53,7 +46,6 @@ export class UserService {
         },
       };
     } catch (error) {
-      console.log(error, 'check error');
       throw new HttpException(
         { reason: 'Something went wrong when querying' + error },
         HttpStatus.BAD_REQUEST,
@@ -134,6 +126,11 @@ export class UserService {
               position: true,
               firstName: true,
               lastName: true,
+              profileImage: {
+                select: {
+                  url: true,
+                },
+              },
             },
           },
         },
