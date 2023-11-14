@@ -20,6 +20,10 @@ export class AppService {
         name: `${athr.firstName} ${athr.lastName}`,
         email: athr.email,
       })),
+      images: data.images.map((athr) => ({
+        url: athr.url,
+        publicId: athr.publicId,
+      })),
     }));
 
     const normalizedJournalistData = journalistData.map((data) => ({
@@ -27,13 +31,14 @@ export class AppService {
       course: data.profile.course,
       position: data.profile.position,
       name: `${data.profile.firstName} ${data.profile.lastName}`,
+      img: data.profile.profileImage.url,
     }));
 
     return {
       pendingArticles: normalizedArticleData.map((item) => ({
         ...item,
       })),
-      userData: normalizedJournalistData,
+      pendingJournalists: normalizedJournalistData,
     };
   }
 }
