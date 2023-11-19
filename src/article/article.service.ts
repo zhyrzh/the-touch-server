@@ -60,6 +60,7 @@ export class ArticleService {
             equals: false,
           },
         },
+
         include: {
           author: {
             select: {
@@ -78,6 +79,43 @@ export class ArticleService {
       });
       return data;
     } catch (error) {
+      throw new HttpException(
+        { reason: 'Something went wrong when querying' + error },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async acceptArticle(id: number) {
+    try {
+      await this.prismaService.article.update({
+        where: {
+          id: id as number,
+        },
+        data: {
+          isApproved: true,
+        },
+      });
+
+      const updatedArticleList = await this.getLimitedRecent();
+
+      return {
+        message: 'Article approved!',
+        updatedArticleList: updatedArticleList.map((data) => ({
+          headline: data.headline,
+          createdAt: data.createdAt,
+          authors: data.author.map((athr) => ({
+            name: `${athr.firstName} ${athr.lastName}`,
+            email: athr.email,
+          })),
+          images: data.images.map((athr) => ({
+            url: athr.url,
+            publicId: athr.publicId,
+          })),
+        })),
+      };
+    } catch (error) {
+      console.log(error);
       throw new HttpException(
         { reason: 'Something went wrong when querying' + error },
         HttpStatus.BAD_REQUEST,

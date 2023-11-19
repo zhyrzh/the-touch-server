@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post, Put } from '@nestjs/common';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { ArticleService } from './article.service';
 
@@ -9,5 +9,11 @@ export class ArticleController {
   @Post()
   async createArticle(@Body() body: CreateArticleDto) {
     return this.articleService.createArticle(body);
+  }
+
+  @Put('/accept-reject/:id')
+  async acceptArticle(@Param('id') id: number) {
+    console.log('hitted', id);
+    return this.articleService.acceptArticle(id);
   }
 }
