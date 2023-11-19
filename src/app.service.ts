@@ -14,6 +14,7 @@ export class AppService {
     const journalistData = await this.userService.getLimitedRecent();
 
     const normalizedArticleData = articleData.map((data) => ({
+      id: data.id,
       headline: data.headline,
       createdAt: data.createdAt,
       authors: data.author.map((athr) => ({
