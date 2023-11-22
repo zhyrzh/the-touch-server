@@ -86,11 +86,11 @@ export class ArticleService {
     }
   }
 
-  async acceptArticle(id: number) {
+  async acceptArticle(id: string) {
     try {
       await this.prismaService.article.update({
         where: {
-          id: id as number,
+          id: Number.parseInt(id),
         },
         data: {
           isApproved: true,

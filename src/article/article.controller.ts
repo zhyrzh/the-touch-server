@@ -12,8 +12,7 @@ export class ArticleController {
   }
 
   @Put('/accept-reject/:id')
-  async acceptArticle(@Param('id') id: number) {
-    console.log('hitted', id);
+  async acceptArticle(@Param('id') id: string) {
     return this.articleService.acceptArticle(id);
   }
 }
