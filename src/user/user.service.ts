@@ -47,7 +47,7 @@ export class UserService {
       };
     } catch (error) {
       throw new HttpException(
-        { reason: 'Something went wrong when querying' + error },
+        { reason: 'Something went wrong when querying!' },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -137,6 +137,42 @@ export class UserService {
       });
 
       return data;
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        { reason: 'Something went wrong when querying!' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async acceptOrRejectUser(id: string) {
+    try {
+      await this.prismaService.article.update({
+        where: {
+          id: Number.parseInt(id),
+        },
+        data: {
+          isApproved: true,
+        },
+      });
+
+      const updatedJournalistList = await this.getLimitedRecent();
+
+      return {
+        message: 'Journalist approved!',
+        updatedArticleList: updatedJournalistList.map((data) => ({
+          email: data.email,
+          course: data.profile.course,
+          position: data.profile.position,
+          name: `${data.profile.firstName} ${data.profile.lastName}`,
+          img: data.profile.profileImage.url,
+        })),
+      };
+    } catch (error) {
+      throw new HttpException(
+        { reason: 'Something went wrong when querying!' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }
