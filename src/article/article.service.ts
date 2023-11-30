@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateArticleDto } from './dto/createArticle.dto';
+import { IParams } from './article.controller';
 
 @Injectable()
 export class ArticleService {
@@ -116,6 +117,58 @@ export class ArticleService {
       };
     } catch (error) {
       console.log(error);
+      throw new HttpException(
+        { reason: 'Something went wrong when querying' + error },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async getAll(params: Partial<IParams>) {
+    let condition = {
+      isApproved: {
+        equals: false,
+      },
+      author: undefined,
+    };
+    if (params.authoredBy) {
+      condition = {
+        ...condition,
+        author: {
+          every: {
+            email: {
+              equals: params.authoredBy,
+            },
+          },
+        },
+      };
+    }
+    try {
+      const data = await this.prismaService.article.findMany({
+        take: 4,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        where: condition,
+
+        include: {
+          author: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+          images: {
+            select: {
+              publicId: true,
+              url: true,
+            },
+          },
+        },
+      });
+      return data;
+    } catch (error) {
       throw new HttpException(
         { reason: 'Something went wrong when querying' + error },
         HttpStatus.BAD_REQUEST,
