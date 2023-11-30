@@ -147,9 +147,9 @@ export class UserService {
 
   async acceptOrRejectUser(id: string) {
     try {
-      await this.prismaService.article.update({
+      await this.prismaService.user.update({
         where: {
-          id: Number.parseInt(id),
+          email: id,
         },
         data: {
           isApproved: true,
@@ -160,7 +160,7 @@ export class UserService {
 
       return {
         message: 'Journalist approved!',
-        updatedArticleList: updatedJournalistList.map((data) => ({
+        updatedJournalistList: updatedJournalistList.map((data) => ({
           email: data.email,
           course: data.profile.course,
           position: data.profile.position,
