@@ -167,7 +167,13 @@ export class ArticleService {
           },
         },
       });
-      return data;
+      return data.map((itm) => ({
+        ...itm,
+        author: itm.author.map((athr) => ({
+          key: athr.email,
+          label: `${athr.firstName} ${athr.lastName}`,
+        })),
+      }));
     } catch (error) {
       throw new HttpException(
         { reason: 'Something went wrong when querying' + error },
