@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { IGetAllQueryParams } from './user.controller';
 
 @Injectable()
 export class UserService {
@@ -174,5 +175,73 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  async getAll(query: Partial<IGetAllQueryParams>) {
+    let condition = {};
+    if (query.hasProfile !== undefined) {
+      if (query.hasProfile)
+        condition = {
+          ...condition,
+          NOT: {
+            profile: null,
+          },
+        };
+      else
+        condition = {
+          profile: {
+            is: null,
+          },
+        };
+    }
+    if (query.isApproved) {
+      condition = {
+        isApproved: {
+          equals: query.isApproved,
+        },
+      };
+    }
+    if (query.position) {
+      condition = {
+        ...condition,
+        profile: {
+          position: {
+            equals: query.position,
+          },
+        },
+      };
+    }
+
+    try {
+      const data = await this.prismaService.user.findMany({
+        where: condition,
+        take: 5,
+        // orderBy: {},
+        select: {
+          email: true,
+          profile: {
+            select: {
+              course: true,
+              position: true,
+              firstName: true,
+              lastName: true,
+              profileImage: {
+                select: {
+                  url: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      return data;
+    } catch (error) {
+      console.log(error, 'check error');
+      throw new HttpException(
+        { reason: 'Something went wrong when querying!' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return 'something';
   }
 }
