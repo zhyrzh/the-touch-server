@@ -98,22 +98,8 @@ export class ArticleService {
         },
       });
 
-      const updatedArticleList = await this.getLimitedRecent();
-
       return {
         message: 'Article approved!',
-        updatedArticleList: updatedArticleList.map((data) => ({
-          headline: data.headline,
-          createdAt: data.createdAt,
-          authors: data.author.map((athr) => ({
-            name: `${athr.firstName} ${athr.lastName}`,
-            email: athr.email,
-          })),
-          images: data.images.map((athr) => ({
-            url: athr.url,
-            publicId: athr.publicId,
-          })),
-        })),
       };
     } catch (error) {
       console.log(error);
