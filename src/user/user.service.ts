@@ -194,7 +194,7 @@ export class UserService {
           },
         };
     }
-    if (query.isApproved) {
+    if (query.isApproved !== undefined) {
       condition = {
         isApproved: {
           equals: query.isApproved,
@@ -234,9 +234,14 @@ export class UserService {
           },
         },
       });
-      return data;
+      return data.map((item) => ({
+        email: item.email,
+        name: `${item.profile.firstName} ${item.profile.lastName}`,
+        position: item.profile.position,
+        course: item.profile.course,
+        img: item.profile.profileImage.url,
+      }));
     } catch (error) {
-      console.log(error, 'check error');
       throw new HttpException(
         { reason: 'Something went wrong when querying!' },
         HttpStatus.BAD_REQUEST,
