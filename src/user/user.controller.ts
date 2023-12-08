@@ -64,7 +64,6 @@ export class UserController {
     )
     hasProfile?: boolean,
   ) {
-    console.log(position, isApproved);
     return this.userService.getAll({
       position,
       isApproved,
