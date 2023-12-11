@@ -49,6 +49,7 @@ export class UploadLibraryService {
         data: {
           url: url,
           publicId: publicId,
+          name: filename,
         },
       });
 
